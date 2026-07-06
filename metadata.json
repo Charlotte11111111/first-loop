@@ -1,0 +1,6 @@
+{
+  "name": "Biosignal Calibration Results",
+  "description": "First Loop physiological calibration demo with 3-Phase / 2-Phase groups, positive/unchanged/negative response scenarios, and dynamic EDA & HR curves.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
