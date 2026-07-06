@@ -6,7 +6,7 @@ Interactive demo for the **First Loop** biosignal calibration experience (Detect
 
 After enabling GitHub Pages, the site will be available at:
 
-`https://<your-username>.github.io/<repo-name>/`
+`https://charlotte11111111.github.io/first-loop/`
 
 ## Local development
 
