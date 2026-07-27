@@ -2,7 +2,8 @@ export type FlowPath = 'A' | 'B' | 'C';
 
 export type FlowStepId =
   | 'register'
-  | 'consent'
+  | 'connect'
+  | 'invite'
   | 'rest'
   | 'emotion'
   | 'stroop'
@@ -21,8 +22,9 @@ export interface FlowNode {
 }
 
 export const FLOW_NODES: FlowNode[] = [
-  { id: 'register', label: 'Link & register device', shortLabel: 'Register', paths: ['A', 'B', 'C'] },
-  { id: 'consent', label: 'Join the experience?', shortLabel: 'Consent', paths: ['A', 'B', 'C'] },
+  { id: 'register', label: 'Create account (background)', shortLabel: 'Register', paths: ['A', 'B', 'C'] },
+  { id: 'connect', label: 'Put on your ring', shortLabel: 'Connect', paths: ['A', 'B', 'C'] },
+  { id: 'invite', label: 'First Loop invite', shortLabel: 'Invite', paths: ['A', 'B', 'C'] },
   { id: 'rest', label: 'Rest baseline', shortLabel: 'Rest 30s', duration: '30s', paths: ['A', 'B'] },
   { id: 'emotion', label: 'Subjective emotional shift', shortLabel: 'Emotion', paths: ['A', 'B'] },
   { id: 'stroop', label: 'Stroop reaction challenge', shortLabel: 'Stroop', duration: '50s', paths: ['A'] },
@@ -51,18 +53,18 @@ export const PATH_META: Record<
     title: 'Path C',
     subtitle: 'Minimal flow',
     duration: '~1 min',
-    description: 'Skip experience → go straight to Home',
+    description: 'Skip First Loop → go straight to Home',
   },
 };
 
 export function getStepsForPath(path: FlowPath): FlowStepId[] {
   switch (path) {
     case 'A':
-      return ['register', 'consent', 'rest', 'emotion', 'stroop', 'coherence', 'results', 'home'];
+      return ['register', 'connect', 'invite', 'rest', 'emotion', 'stroop', 'coherence', 'results', 'home'];
     case 'B':
-      return ['register', 'consent', 'rest', 'emotion', 'coherence', 'results', 'home'];
+      return ['register', 'connect', 'invite', 'rest', 'emotion', 'coherence', 'results', 'home'];
     case 'C':
-      return ['register', 'consent', 'home'];
+      return ['register', 'connect', 'invite', 'home'];
   }
 }
 

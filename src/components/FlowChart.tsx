@@ -20,16 +20,17 @@ type NodeDef = {
 };
 
 const NODES: NodeDef[] = [
-  { id: 'register', x: 150, y: 36, w: 112, label: 'Register' },
-  { id: 'consent', x: 150, y: 108, w: 112, label: 'Consent' },
-  { id: 'consent_skip', x: 48, y: 182, w: 96, label: 'Skip' },
-  { id: 'home_c', x: 48, y: 258, w: 96, label: 'Home' },
-  { id: 'rest', x: 252, y: 182, w: 96, label: 'Rest' },
-  { id: 'emotion', x: 252, y: 258, w: 96, label: 'Emotion' },
-  { id: 'stroop', x: 180, y: 334, w: 88, label: 'Stroop' },
-  { id: 'coherence', x: 252, y: 410, w: 96, label: 'Breathing' },
-  { id: 'results', x: 252, y: 486, w: 96, label: 'Results' },
-  { id: 'home', x: 252, y: 562, w: 96, label: 'Home' },
+  { id: 'register', x: 150, y: 28, w: 100, label: 'Register' },
+  { id: 'connect', x: 150, y: 92, w: 100, label: 'Connect' },
+  { id: 'invite', x: 150, y: 156, w: 100, label: 'Invite' },
+  { id: 'invite_skip', x: 48, y: 230, w: 88, label: 'Skip' },
+  { id: 'home_c', x: 48, y: 304, w: 88, label: 'Home' },
+  { id: 'rest', x: 252, y: 230, w: 88, label: 'Rest' },
+  { id: 'emotion', x: 252, y: 304, w: 88, label: 'Emotion' },
+  { id: 'stroop', x: 180, y: 378, w: 80, label: 'Stroop' },
+  { id: 'coherence', x: 252, y: 452, w: 88, label: 'Breathing' },
+  { id: 'results', x: 252, y: 526, w: 88, label: 'Results' },
+  { id: 'home', x: 252, y: 600, w: 88, label: 'Home' },
 ];
 
 function getNode(id: ClickableNodeId) {
@@ -52,7 +53,7 @@ export const FlowChart: React.FC<FlowChartProps> = ({
 
   const renderNode = (n: NodeDef) => {
     const { active, done, skipped } = nodeState(n.id);
-    const h = 38;
+    const h = 36;
     const rx = 11;
 
     let fill = '#ffffff';
@@ -104,7 +105,6 @@ export const FlowChart: React.FC<FlowChartProps> = ({
           fill={fill}
           stroke={stroke}
           strokeWidth={strokeW}
-          className="transition-colors duration-200"
         />
         <text
           x={n.x}
@@ -112,34 +112,27 @@ export const FlowChart: React.FC<FlowChartProps> = ({
           textAnchor="middle"
           dominantBaseline="middle"
           fill={textFill}
-          fontSize={13}
+          fontSize={12}
           fontWeight={active ? 600 : 500}
           fontFamily="Inter, system-ui, sans-serif"
         >
           {n.label}
         </text>
         {done && !active && (
-          <circle cx={n.x + n.w / 2 - 7} cy={n.y - h / 2 + 7} r={6} fill="#22c55e" />
+          <circle cx={n.x + n.w / 2 - 7} cy={n.y - h / 2 + 7} r={5} fill="#22c55e" />
         )}
       </g>
     );
   };
 
-  const line = (x1: number, y1: number, x2: number, y2: number, dashed = false) => (
-    <line
-      x1={x1}
-      y1={y1}
-      x2={x2}
-      y2={y2}
-      stroke="#cbd5e1"
-      strokeWidth={2}
-      strokeDasharray={dashed ? '4 3' : undefined}
-    />
+  const line = (x1: number, y1: number, x2: number, y2: number) => (
+    <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#cbd5e1" strokeWidth={2} />
   );
 
   const reg = getNode('register');
-  const con = getNode('consent');
-  const skip = getNode('consent_skip');
+  const con = getNode('connect');
+  const inv = getNode('invite');
+  const skip = getNode('invite_skip');
   const homeC = getNode('home_c');
   const rest = getNode('rest');
   const emo = getNode('emotion');
@@ -157,32 +150,33 @@ export const FlowChart: React.FC<FlowChartProps> = ({
 
       <div className="flex-1 min-h-0 rounded-2xl border border-slate-100 bg-gradient-to-b from-white to-slate-50/80 p-4 shadow-sm flex items-center justify-center">
         <svg
-          viewBox="0 0 300 598"
+          viewBox="0 0 300 640"
           preserveAspectRatio="xMidYMid meet"
           className="w-full h-full"
           style={{ minHeight: 520, maxHeight: 'calc(100vh - 120px)' }}
         >
-          {line(reg.x, reg.y + 19, con.x, con.y - 19)}
-          {line(con.x - 22, con.y + 12, skip.x + 12, skip.y - 12)}
-          {line(con.x + 22, con.y + 12, rest.x - 12, rest.y - 12)}
-          {line(skip.x, skip.y + 19, homeC.x, homeC.y - 19)}
-          {line(rest.x, rest.y + 19, emo.x, emo.y - 19)}
+          {line(reg.x, reg.y + 18, con.x, con.y - 18)}
+          {line(con.x, con.y + 18, inv.x, inv.y - 18)}
+          {line(inv.x - 22, inv.y + 12, skip.x + 12, skip.y - 12)}
+          {line(inv.x + 22, inv.y + 12, rest.x - 12, rest.y - 12)}
+          {line(skip.x, skip.y + 18, homeC.x, homeC.y - 18)}
+          {line(rest.x, rest.y + 18, emo.x, emo.y - 18)}
           {line(emo.x - 16, emo.y + 14, str.x + 6, str.y - 14)}
-          {line(emo.x, emo.y + 19, coh.x, coh.y - 19)}
+          {line(emo.x, emo.y + 18, coh.x, coh.y - 18)}
           {line(str.x + 12, str.y + 14, coh.x - 22, coh.y - 14)}
-          {line(coh.x, coh.y + 19, res.x, res.y - 19)}
-          {line(res.x, res.y + 19, home.x, home.y - 19)}
+          {line(coh.x, coh.y + 18, res.x, res.y - 18)}
+          {line(res.x, res.y + 18, home.x, home.y - 18)}
 
-          <text x={95} y={158} fontSize={11} fill="#94a3b8" fontFamily="Inter, sans-serif">
+          <text x={95} y={200} fontSize={11} fill="#94a3b8" fontFamily="Inter, sans-serif">
             Skip
           </text>
-          <text x={210} y={158} fontSize={11} fill="#94a3b8" fontFamily="Inter, sans-serif">
+          <text x={210} y={200} fontSize={11} fill="#94a3b8" fontFamily="Inter, sans-serif">
             Continue
           </text>
-          <text x={195} y={312} fontSize={11} fill="#94a3b8" fontFamily="Inter, sans-serif">
+          <text x={195} y={358} fontSize={11} fill="#94a3b8" fontFamily="Inter, sans-serif">
             No shift
           </text>
-          <text x={268} y={312} fontSize={10} fill="#94a3b8" fontFamily="Inter, sans-serif">
+          <text x={268} y={358} fontSize={10} fill="#94a3b8" fontFamily="Inter, sans-serif">
             Has shift
           </text>
 

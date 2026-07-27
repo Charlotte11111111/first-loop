@@ -4,7 +4,8 @@ import { FlowPath, FlowStepId, resolvePathAfterEmotion } from './flow/config';
 import { ClickableNodeId, getDemoContextForStep, resolveBackStep } from './flow/graph';
 import { FlowChart } from './components/FlowChart';
 import { FlowDemoFrame } from './components/FlowDemoFrame';
-import { ConsentStep } from './components/flow/ConsentStep';
+import { ConnectStep } from './components/flow/ConnectStep';
+import { InviteStep } from './components/flow/InviteStep';
 import { RestStep } from './components/flow/RestStep';
 import { EmotionStep } from './components/flow/EmotionStep';
 import { StroopStep } from './components/flow/StroopStep';
@@ -13,8 +14,9 @@ import { FlowResultsStep } from './components/flow/FlowResultsStep';
 import { HomeStep } from './components/flow/HomeStep';
 
 const STEP_TITLES: Record<FlowStepId, string> = {
-  register: 'Setup',
-  consent: 'First Loop',
+  register: 'Create account',
+  connect: 'Energy OS',
+  invite: 'First Loop',
   rest: 'Rest baseline',
   emotion: 'Emotion check-in',
   stroop: 'Stroop challenge',
@@ -25,7 +27,7 @@ const STEP_TITLES: Record<FlowStepId, string> = {
 
 export default function App() {
   const [activePath, setActivePath] = useState<FlowPath | null>(null);
-  const [currentStep, setCurrentStep] = useState<FlowStepId>('consent');
+  const [currentStep, setCurrentStep] = useState<FlowStepId>('connect');
   const [completedSteps, setCompletedSteps] = useState<FlowStepId[]>(['register']);
   const [skippedSteps, setSkippedSteps] = useState<FlowStepId[]>([]);
   const [hadStroop, setHadStroop] = useState(false);
@@ -71,19 +73,31 @@ export default function App() {
   const backStep = resolveBackStep(currentStep, hadStroop, skippedFlow);
   const showBack = backStep !== null;
 
-  const handleConsentAccept = () => {
+  const handleConnectContinue = () => {
+    markComplete('connect');
+    setCurrentStep('invite');
+    bumpFlow();
+    showToast('First Loop invite');
+  };
+
+  const handleConnectSkip = () => {
+    applyContext(getDemoContextForStep('invite_skip'));
+    showToast('Going to Home');
+  };
+
+  const handleInviteAccept = () => {
     setActivePath(null);
     setSkippedFlow(false);
     setSkippedSteps([]);
     setHadStroop(false);
-    markComplete('consent');
+    markComplete('invite');
     setCurrentStep('rest');
     bumpFlow();
     showToast('Starting rest baseline');
   };
 
-  const handleConsentSkip = () => {
-    applyContext(getDemoContextForStep('consent_skip'));
+  const handleInviteSkip = () => {
+    applyContext(getDemoContextForStep('invite_skip'));
     showToast('Going to Home');
   };
 
@@ -122,26 +136,38 @@ export default function App() {
     showToast('Going to Home');
   };
 
-  const handleRetryExperience = () => {
+  const handleStartFirstLoop = () => {
     setSkippedFlow(false);
-    setCompletedSteps(['register', 'consent']);
+    setActivePath(null);
+    setHadStroop(false);
+    setCompletedSteps(['register', 'connect']);
     setSkippedSteps([]);
-    setCurrentStep('rest');
+    setCurrentStep('invite');
     bumpFlow();
-    showToast('Try again · Rest baseline');
+    showToast('First Loop invite');
+  };
+
+  const handleRetryExperience = () => {
+    handleStartFirstLoop();
   };
 
   const handleReset = () => {
-    applyContext(getDemoContextForStep('consent'));
-    setCompletedSteps(['register']);
-    setSkippedSteps([]);
+    applyContext(getDemoContextForStep('connect'));
     showToast('Flow reset');
   };
 
   const renderStep = () => {
     switch (currentStep) {
-      case 'consent':
-        return <ConsentStep onAccept={handleConsentAccept} onSkip={handleConsentSkip} />;
+      case 'connect':
+        return (
+          <ConnectStep
+            key={`connect-${flowKey}`}
+            onContinue={handleConnectContinue}
+            onSkip={handleConnectSkip}
+          />
+        );
+      case 'invite':
+        return <InviteStep onAccept={handleInviteAccept} onSkip={handleInviteSkip} />;
       case 'rest':
         return <RestStep key={`rest-${flowKey}`} onComplete={handleRestComplete} />;
       case 'emotion':
@@ -149,9 +175,7 @@ export default function App() {
       case 'stroop':
         return <StroopStep key={`stroop-${flowKey}`} onComplete={handleStroopComplete} />;
       case 'coherence':
-        return (
-          <CoherenceStep key={`coh-${flowKey}`} onComplete={handleCoherenceComplete} />
-        );
+        return <CoherenceStep key={`coh-${flowKey}`} onComplete={handleCoherenceComplete} />;
       case 'results':
         return (
           <FlowResultsStep
@@ -166,10 +190,13 @@ export default function App() {
           <HomeStep
             skippedFlow={skippedFlow}
             completedFlow={!skippedFlow && completedSteps.includes('results')}
+            onStartFirstLoop={handleStartFirstLoop}
           />
         );
       default:
-        return null;
+        return (
+          <ConnectStep onContinue={handleConnectContinue} onSkip={handleConnectSkip} />
+        );
     }
   };
 
