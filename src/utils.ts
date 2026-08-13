@@ -23,11 +23,12 @@ export function generateCalibrationData(
 
     if (edaQuality === 'normal') {
       if (isTwoPhase) {
+        // Path B: already elevated after emotional shift → decline during breathing
         if (t <= 30) {
-          eda = 3.5 + 0.05 * Math.sin(t / 4) + Math.sin(t) * 0.02;
+          eda = 4.6 + 0.06 * Math.sin(t / 4) + Math.sin(t) * 0.02;
         } else {
           const sigmoid = 1 / (1 + Math.exp(-(t - 65) / 12));
-          eda = 3.5 - (3.5 - 2.2) * sigmoid + Math.sin(t) * 0.02;
+          eda = 4.6 - (4.6 - 2.2) * sigmoid + Math.sin(t) * 0.02;
         }
       } else if (t <= 30) {
         eda = 2.6 + 0.05 * Math.sin(t / 4) + Math.sin(t) * 0.02;
@@ -42,9 +43,9 @@ export function generateCalibrationData(
     } else if (edaQuality === 'plateau') {
       if (isTwoPhase) {
         if (t <= 30) {
-          eda = 3.5 + 0.05 * Math.sin(t / 4) + Math.sin(t) * 0.02;
+          eda = 4.6 + 0.06 * Math.sin(t / 4) + Math.sin(t) * 0.02;
         } else {
-          eda = 3.8 + 0.06 * Math.sin(t / 5) + Math.sin(t * 1.2) * 0.02;
+          eda = 4.8 + 0.08 * Math.sin(t / 5) + Math.sin(t * 1.2) * 0.02;
         }
       } else if (t <= 30) {
         eda = 2.6 + 0.05 * Math.sin(t / 4) + Math.sin(t) * 0.02;
@@ -57,10 +58,10 @@ export function generateCalibrationData(
     } else if (edaQuality === 'rising') {
       if (isTwoPhase) {
         if (t <= 30) {
-          eda = 3.5 + 0.05 * Math.sin(t / 4) + Math.sin(t) * 0.02;
+          eda = 4.6 + 0.06 * Math.sin(t / 4) + Math.sin(t) * 0.02;
         } else {
           const sigmoid = 1 / (1 + Math.exp(-(t - 70) / 10));
-          eda = 3.5 + (5.8 - 3.5) * sigmoid + Math.sin(t) * 0.03;
+          eda = 4.6 + (7.2 - 4.6) * sigmoid + Math.sin(t) * 0.03;
         }
       } else if (t <= 30) {
         eda = 2.6 + 0.05 * Math.sin(t / 4) + Math.sin(t) * 0.02;
@@ -73,7 +74,7 @@ export function generateCalibrationData(
         eda = peakEda + (8.2 - peakEda) * sigmoid + Math.sin(t) * 0.03;
       }
     } else if (edaQuality === 'flat') {
-      const baseEda = isTwoPhase ? 3.5 : 2.6;
+      const baseEda = isTwoPhase ? 4.6 : 2.6;
       eda = baseEda + 0.04 * Math.sin(t / 5) + Math.sin(t * 1.5) * 0.015;
     } else {
       const base = 2.6 + 0.08 * Math.sin(t / 4);

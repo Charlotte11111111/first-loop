@@ -1,6 +1,25 @@
 import { FlowStepId } from './config';
 
-export type ClickableNodeId = FlowStepId | 'invite_skip' | 'home_c';
+/**
+ * Path A and Path B keep separate Breathing / Results / Home nodes because their
+ * result pages show different phase sections (3-phase vs 2-phase).
+ */
+export type ClickableNodeId =
+  | FlowStepId
+  | 'invite_skip'
+  | 'home_c'
+  | 'coherence_b'
+  | 'results_b'
+  | 'home_b';
+
+/** Path B duplicates of shared steps → their underlying step id */
+const BRANCH_B_BASE: Record<string, FlowStepId> = {
+  coherence_b: 'coherence',
+  results_b: 'results',
+  home_b: 'home',
+};
+
+const BRANCH_A_NODES: FlowStepId[] = ['stroop', 'coherence', 'results', 'home'];
 
 export const PREVIOUS_STEP: Partial<Record<FlowStepId, FlowStepId>> = {
   connect: 'register',
@@ -32,7 +51,7 @@ export function getDemoContextForStep(step: ClickableNodeId): {
   skippedSteps: FlowStepId[];
   completedSteps: FlowStepId[];
 } {
-  const registered = ['register'] as FlowStepId[];
+  const onboarding = ['register', 'connect', 'invite'] as FlowStepId[];
 
   switch (step) {
     case 'register':
@@ -43,7 +62,7 @@ export function getDemoContextForStep(step: ClickableNodeId): {
         hadStroop: false,
         skippedFlow: false,
         skippedSteps: [],
-        completedSteps: registered,
+        completedSteps: ['register'],
       };
     case 'invite':
       return {
@@ -52,7 +71,7 @@ export function getDemoContextForStep(step: ClickableNodeId): {
         hadStroop: false,
         skippedFlow: false,
         skippedSteps: [],
-        completedSteps: [...registered, 'connect'],
+        completedSteps: ['register', 'connect'],
       };
     case 'invite_skip':
     case 'home_c':
@@ -62,7 +81,7 @@ export function getDemoContextForStep(step: ClickableNodeId): {
         hadStroop: false,
         skippedFlow: true,
         skippedSteps: ['rest', 'emotion', 'stroop', 'coherence', 'results'],
-        completedSteps: [...registered, 'connect', 'invite'],
+        completedSteps: onboarding,
       };
     case 'rest':
       return {
@@ -71,7 +90,7 @@ export function getDemoContextForStep(step: ClickableNodeId): {
         hadStroop: false,
         skippedFlow: false,
         skippedSteps: [],
-        completedSteps: [...registered, 'connect', 'invite'],
+        completedSteps: onboarding,
       };
     case 'emotion':
       return {
@@ -80,8 +99,10 @@ export function getDemoContextForStep(step: ClickableNodeId): {
         hadStroop: false,
         skippedFlow: false,
         skippedSteps: [],
-        completedSteps: [...registered, 'connect', 'invite', 'rest'],
+        completedSteps: [...onboarding, 'rest'],
       };
+
+    // ---- Path A (no emotional shift → Stroop, 3-phase results) ----
     case 'stroop':
       return {
         step: 'stroop',
@@ -89,7 +110,7 @@ export function getDemoContextForStep(step: ClickableNodeId): {
         hadStroop: true,
         skippedFlow: false,
         skippedSteps: [],
-        completedSteps: [...registered, 'connect', 'invite', 'rest', 'emotion'],
+        completedSteps: [...onboarding, 'rest', 'emotion'],
       };
     case 'coherence':
       return {
@@ -98,7 +119,7 @@ export function getDemoContextForStep(step: ClickableNodeId): {
         hadStroop: true,
         skippedFlow: false,
         skippedSteps: [],
-        completedSteps: [...registered, 'connect', 'invite', 'rest', 'emotion', 'stroop'],
+        completedSteps: [...onboarding, 'rest', 'emotion', 'stroop'],
       };
     case 'results':
       return {
@@ -107,15 +128,7 @@ export function getDemoContextForStep(step: ClickableNodeId): {
         hadStroop: true,
         skippedFlow: false,
         skippedSteps: [],
-        completedSteps: [
-          ...registered,
-          'connect',
-          'invite',
-          'rest',
-          'emotion',
-          'stroop',
-          'coherence',
-        ],
+        completedSteps: [...onboarding, 'rest', 'emotion', 'stroop', 'coherence'],
       };
     case 'home':
       return {
@@ -124,17 +137,38 @@ export function getDemoContextForStep(step: ClickableNodeId): {
         hadStroop: true,
         skippedFlow: false,
         skippedSteps: [],
-        completedSteps: [
-          ...registered,
-          'connect',
-          'invite',
-          'rest',
-          'emotion',
-          'stroop',
-          'coherence',
-          'results',
-        ],
+        completedSteps: [...onboarding, 'rest', 'emotion', 'stroop', 'coherence', 'results'],
       };
+
+    // ---- Path B (emotional shift → straight to breathing, 2-phase results) ----
+    case 'coherence_b':
+      return {
+        step: 'coherence',
+        activePath: 'B',
+        hadStroop: false,
+        skippedFlow: false,
+        skippedSteps: ['stroop'],
+        completedSteps: [...onboarding, 'rest', 'emotion'],
+      };
+    case 'results_b':
+      return {
+        step: 'results',
+        activePath: 'B',
+        hadStroop: false,
+        skippedFlow: false,
+        skippedSteps: ['stroop'],
+        completedSteps: [...onboarding, 'rest', 'emotion', 'coherence'],
+      };
+    case 'home_b':
+      return {
+        step: 'home',
+        activePath: 'B',
+        hadStroop: false,
+        skippedFlow: false,
+        skippedSteps: ['stroop'],
+        completedSteps: [...onboarding, 'rest', 'emotion', 'coherence', 'results'],
+      };
+
     default:
       return {
         step: 'connect',
@@ -142,7 +176,7 @@ export function getDemoContextForStep(step: ClickableNodeId): {
         hadStroop: false,
         skippedFlow: false,
         skippedSteps: [],
-        completedSteps: registered,
+        completedSteps: ['register'],
       };
   }
 }
@@ -150,16 +184,20 @@ export function getDemoContextForStep(step: ClickableNodeId): {
 export function isNodeActive(
   nodeId: ClickableNodeId,
   currentStep: FlowStepId,
-  skippedFlow: boolean
+  skippedFlow: boolean,
+  hadStroop: boolean
 ): boolean {
   if (nodeId === 'invite_skip' || nodeId === 'home_c') {
     return skippedFlow && currentStep === 'home';
   }
-  if (nodeId === 'home') {
-    return !skippedFlow && currentStep === 'home';
+  if (nodeId === 'register') return false;
+
+  const bBase = BRANCH_B_BASE[nodeId];
+  if (bBase) {
+    return !skippedFlow && !hadStroop && currentStep === bBase;
   }
-  if (nodeId === 'register') {
-    return false;
+  if (BRANCH_A_NODES.includes(nodeId as FlowStepId)) {
+    return !skippedFlow && hadStroop && currentStep === nodeId;
   }
   return nodeId === currentStep;
 }
@@ -167,14 +205,24 @@ export function isNodeActive(
 export function isNodeCompleted(
   nodeId: ClickableNodeId,
   completedSteps: FlowStepId[],
-  _skippedSteps: FlowStepId[]
+  _skippedSteps: FlowStepId[],
+  hadStroop = false
 ): boolean {
-  if (nodeId === 'invite_skip') return false;
+  if (nodeId === 'invite_skip' || nodeId === 'home_c') return false;
   if (nodeId === 'register') return true;
+
+  const bBase = BRANCH_B_BASE[nodeId];
+  if (bBase) {
+    return !hadStroop && completedSteps.includes(bBase);
+  }
+  if (BRANCH_A_NODES.includes(nodeId as FlowStepId)) {
+    return hadStroop && completedSteps.includes(nodeId as FlowStepId);
+  }
   return completedSteps.includes(nodeId as FlowStepId);
 }
 
 export function isNodeSkipped(nodeId: ClickableNodeId, skippedSteps: FlowStepId[]): boolean {
-  if (nodeId === 'invite_skip') return false;
+  if (nodeId === 'invite_skip' || nodeId === 'home_c') return false;
+  if (BRANCH_B_BASE[nodeId]) return false;
   return skippedSteps.includes(nodeId as FlowStepId);
 }

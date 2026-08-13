@@ -237,6 +237,7 @@ export default function App() {
             completedSteps={completedSteps}
             skippedSteps={skippedSteps}
             skippedFlow={skippedFlow}
+            hadStroop={hadStroop}
             onNodeClick={handleNodeClick}
           />
         </aside>

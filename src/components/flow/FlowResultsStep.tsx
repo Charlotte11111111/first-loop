@@ -67,6 +67,14 @@ export const FlowResultsStep: React.FC<FlowResultsStepProps> = ({ hadStroop, onC
 
   return (
     <div className="pb-6">
+      <div className="mx-4 mt-2 px-2.5 py-1.5 rounded-lg bg-slate-50 border border-slate-100">
+        <p className="text-[9px] text-slate-500 leading-snug">
+          {hadStroop
+            ? 'Path A · 3-phase: Rest → Stroop → Breathing'
+            : 'Path B · 2-phase: Elevated baseline → Breathing (skip Stroop)'}
+        </p>
+      </div>
+
       <div className="mx-4 mt-2 flex p-1 bg-slate-100 rounded-xl gap-0.5">
         {tabs.map((tab) => (
           <button

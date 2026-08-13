@@ -234,7 +234,7 @@ export const CalibrationChart: React.FC<CalibrationChartProps> = ({
             textAnchor="middle"
             className="text-[9px] font-medium fill-sky-600/90 pointer-events-none"
           >
-            Rest 0-30s
+            {isTwoPhase ? 'Elevated 0-30s' : 'Rest 0-30s'}
           </text>
           {isTwoPhase ? (
             <text
@@ -243,7 +243,7 @@ export const CalibrationChart: React.FC<CalibrationChartProps> = ({
               textAnchor="middle"
               className="text-[9px] font-medium fill-emerald-600/90 pointer-events-none"
             >
-              Resonance Breathing 30-120s
+              Breathing 30-120s
             </text>
           ) : (
             <>
