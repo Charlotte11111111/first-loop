@@ -221,9 +221,9 @@ export const ABNORMAL_SIM_PROFILES: AbnormalSimProfile[] = [
   {
     id: 'no_stroop',
     label: 'Stress not induced',
-    description: 'EDA did not rise during Stroop',
+    description: 'EDA did not rise during Stroop; HR rhythm normal',
     edaQuality: 'flat',
-    hrQuality: 'flat',
+    hrQuality: 'normal',
     phases: ['3phase'],
   },
   {

@@ -79,6 +79,16 @@ function otherVariants(phase: PhaseMode): ResultVariant[] {
       primaryButtonText: 'Enter Home',
       secondaryButtonText: 'Try Again',
     },
+    other_no_eda: {
+      id: 'other_no_eda',
+      label: 'No EDA',
+      phases: ['3phase'],
+      signal: { edaQuality: 'flat', hrQuality: 'normal' },
+      title: 'No stress rise during Stroop',
+      body: 'Heart rate held a steady rhythm during breathing, but skin conductance did not rise during the Stroop task — the challenge may not have triggered a clear stress response. Your baseline and breathing rhythm are saved; you can try again or continue on Home.',
+      primaryButtonText: 'Enter Home',
+      secondaryButtonText: 'Try Again',
+    },
     other_no_hr: {
       id: 'other_no_hr',
       label: 'No HR',
@@ -101,7 +111,7 @@ function otherVariants(phase: PhaseMode): ResultVariant[] {
     },
   };
 
-  const order = ['other_flat', 'other_no_hr', 'other_interference'];
+  const order = ['other_flat', 'other_no_eda', 'other_no_hr', 'other_interference'];
   return order
     .map((id) => byId[id])
     .filter((v) => v.phases.includes(phase));
