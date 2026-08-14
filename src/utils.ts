@@ -92,8 +92,9 @@ export function generateCalibrationData(
 
     if (hrQuality === 'normal') {
       if (isTwoPhase) {
+        // Path B: elevated but steady baseline → rhythmic HR only during breathing
         if (t <= 30) {
-          hr = 80 + 0.8 * Math.sin(t / 2) + Math.sin(t * 1.8) * 0.3;
+          hr = 80 + 0.5 * Math.sin(t / 5) + Math.sin(t * 2.1) * 0.2;
         } else {
           const amplitudeEnvelope = Math.min(6.5, (t - 30) * 0.8);
           const sineWave = Math.sin((2 * Math.PI * (t - 30)) / 10);
@@ -101,12 +102,18 @@ export function generateCalibrationData(
           hr = baseHr + amplitudeEnvelope * sineWave + Math.sin(t * 2) * 0.25;
         }
       } else if (t <= 30) {
-        hr = 76 + 0.8 * Math.sin(t / 2) + Math.sin(t * 1.8) * 0.3;
+        // Rest: stable baseline, tiny natural jitter only
+        hr = 76 + 0.5 * Math.sin(t / 5) + Math.sin(t * 2.1) * 0.2;
+      } else if (t <= 75) {
+        // Stroop: slight HR rise + small irregular jitter — no coherence rhythm
+        const rise = 2 * Math.min(1, (t - 30) / 12);
+        hr = 76 + rise + 0.7 * Math.sin(t / 3.5) + Math.sin(t * 2.4) * 0.35;
       } else {
-        const amplitudeEnvelope = Math.min(6, (t - 30) * 1.2);
-        const sineWave = Math.sin((2 * Math.PI * (t - 30)) / 10);
-        const baseHr = 76 + (78 - 76) * Math.min(1, (t - 30) / 10);
-        hr = baseHr + amplitudeEnvelope * sineWave + Math.sin(t * 2) * 0.25;
+        // Coherence: clear ~10s breathing rhythm builds in
+        const amplitudeEnvelope = Math.min(6, (t - 75) * 0.9);
+        const sineWave = Math.sin((2 * Math.PI * (t - 75)) / 10);
+        const baseHr = 78 - (78 - 74) * Math.min(1, (t - 75) / 18);
+        hr = baseHr + amplitudeEnvelope * sineWave + Math.sin(t * 2) * 0.2;
       }
     } else if (hrQuality === 'flat') {
       const baseHr = isTwoPhase ? 80 : 76;
