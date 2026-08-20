@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Play, Waves } from 'lucide-react';
 
 interface RestStepProps {
   onComplete: () => void;
@@ -7,9 +8,11 @@ interface RestStepProps {
 const DURATION = 30;
 
 export const RestStep: React.FC<RestStepProps> = ({ onComplete }) => {
+  const [started, setStarted] = useState(false);
   const [elapsed, setElapsed] = useState(0);
 
   useEffect(() => {
+    if (!started) return;
     if (elapsed >= DURATION) {
       onComplete();
       return;
@@ -17,7 +20,39 @@ export const RestStep: React.FC<RestStepProps> = ({ onComplete }) => {
     const t = setTimeout(() => setElapsed((e) => e + 1), 1000);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [elapsed]);
+  }, [started, elapsed]);
+
+  if (!started) {
+    return (
+      <div className="flex flex-col min-h-[580px] pb-8 bg-[#f6f8fb]">
+        <div className="flex-1 flex flex-col items-center justify-center px-7 text-center">
+          <div className="w-16 h-16 rounded-2xl bg-blue-500/10 border border-blue-200 flex items-center justify-center mb-5">
+            <Waves className="w-8 h-8 text-blue-600" />
+          </div>
+          <h2 className="text-xl font-semibold text-slate-900 mb-2 tracking-tight">
+            Get ready for your rest baseline
+          </h2>
+          <p className="text-sm text-slate-500 leading-relaxed max-w-[285px] mb-6">
+            We’ll first measure your signals while your body is at rest.
+          </p>
+          <div className="w-full max-w-[300px] rounded-2xl bg-white border border-slate-100 p-4 text-left space-y-3 mb-8 shadow-sm">
+            <p className="text-xs text-slate-700"><span className="font-semibold text-blue-600">01</span> Breathe evenly and naturally</p>
+            <p className="text-xs text-slate-700"><span className="font-semibold text-blue-600">02</span> Rest your wrist on the table</p>
+            <p className="text-xs text-slate-700"><span className="font-semibold text-blue-600">03</span> Keep still and avoid talking</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setStarted(true)}
+            className="w-full max-w-[300px] py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20 active:scale-[0.98] transition-all cursor-pointer"
+          >
+            <Play className="w-4 h-4 fill-white" />
+            <span>Start rest measurement</span>
+          </button>
+          <p className="text-[11px] text-slate-400 mt-4">Stay still for 30 seconds</p>
+        </div>
+      </div>
+    );
+  }
 
   const remaining = DURATION - elapsed;
   const ringProgress = (elapsed / DURATION) * 100;

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { Brain, Play } from 'lucide-react';
 
 interface StroopStepProps {
   onComplete: () => void;
@@ -24,6 +25,7 @@ function pickTrial() {
 }
 
 export const StroopStep: React.FC<StroopStepProps> = ({ onComplete }) => {
+  const [started, setStarted] = useState(false);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState(SECONDS_PER_QUESTION);
   const [trial, setTrial] = useState(pickTrial);
@@ -59,6 +61,7 @@ export const StroopStep: React.FC<StroopStepProps> = ({ onComplete }) => {
   );
 
   useEffect(() => {
+    if (!started) return;
     if (lockedRef.current || feedback) return;
 
     if (timeLeft <= 0) {
@@ -68,45 +71,70 @@ export const StroopStep: React.FC<StroopStepProps> = ({ onComplete }) => {
 
     const t = setTimeout(() => setTimeLeft((s) => s - 1), 1000);
     return () => clearTimeout(t);
-  }, [timeLeft, feedback, advanceQuestion]);
+  }, [started, timeLeft, feedback, advanceQuestion]);
 
   const handleAnswer = (color: (typeof COLORS)[0]) => {
     if (lockedRef.current || feedback) return;
     advanceQuestion(color.name === trial.ink.name);
   };
 
-  const questionProgress =
-    ((questionIndex + (SECONDS_PER_QUESTION - timeLeft) / SECONDS_PER_QUESTION) / TOTAL_QUESTIONS) *
-    100;
+  const questionProgress = ((questionIndex + 1) / TOTAL_QUESTIONS) * 100;
+
+  if (!started) {
+    return (
+      <div className="flex flex-col min-h-[580px] pb-8 bg-[#f6f8fb]">
+        <div className="flex-1 flex flex-col items-center justify-center px-7 text-center">
+          <div className="w-16 h-16 rounded-2xl bg-violet-500/10 border border-violet-200 flex items-center justify-center mb-5">
+            <Brain className="w-8 h-8 text-violet-600" />
+          </div>
+          <h2 className="text-xl font-semibold text-slate-900 mb-2 tracking-tight">
+            A short reaction challenge
+          </h2>
+          <p className="text-sm text-slate-500 leading-relaxed max-w-[285px] mb-5">
+            Stroop briefly activates attention and creates a controlled mental challenge, so we can
+            observe how your body responds and recovers.
+          </p>
+          <div className="w-full max-w-[300px] rounded-2xl bg-white border border-slate-100 p-4 text-left mb-8 shadow-sm">
+            <p className="text-xs font-semibold text-slate-800 mb-1.5">How it works</p>
+            <p className="text-xs text-slate-500 leading-relaxed">
+              Choose the color of the letters—not the word itself. You’ll have 5 seconds for each of
+              10 questions.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setStarted(true)}
+            className="w-full max-w-[300px] py-3.5 rounded-2xl bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold flex items-center justify-center gap-2 shadow-lg shadow-violet-600/20 active:scale-[0.98] transition-all cursor-pointer"
+          >
+            <Play className="w-4 h-4 fill-white" />
+            <span>Start challenge</span>
+          </button>
+          <p className="text-[11px] text-slate-400 mt-4">Use the back button to return</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col pb-6">
       <div className="mx-4 mt-3 px-3 py-2.5 bg-white rounded-xl border border-slate-100">
-        <div className="flex justify-between text-[10px] mb-1.5">
+        <div className="flex justify-between items-center mb-2">
           <span className="text-slate-500 font-medium">Reaction challenge</span>
-          <span className="font-mono text-slate-700 font-bold tabular-nums">
-            Q{questionIndex + 1}/{TOTAL_QUESTIONS} · {timeLeft}s
+          <span className="text-[11px] font-semibold text-slate-500 tabular-nums">
+            Question {questionIndex + 1} of {TOTAL_QUESTIONS}
           </span>
         </div>
-        <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-blue-500 rounded-full transition-all duration-300"
-            style={{ width: `${Math.min(100, questionProgress)}%` }}
-          />
-        </div>
-        <div className="flex gap-1 mt-2">
-          {Array.from({ length: TOTAL_QUESTIONS }, (_, i) => (
+        <div className="flex items-center gap-3">
+          <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
             <div
-              key={i}
-              className={`h-1 flex-1 rounded-full transition-colors ${
-                i < questionIndex
-                  ? 'bg-blue-500'
-                  : i === questionIndex
-                    ? 'bg-blue-300'
-                    : 'bg-slate-100'
-              }`}
+              className="h-full bg-violet-500 rounded-full transition-all duration-300"
+              style={{ width: `${Math.min(100, questionProgress)}%` }}
             />
-          ))}
+          </div>
+          <span className="shrink-0 text-lg font-bold text-slate-800 tabular-nums leading-none">
+            {timeLeft}
+            <span className="ml-0.5 text-[11px] font-medium text-slate-400">s</span>
+          </span>
         </div>
       </div>
 

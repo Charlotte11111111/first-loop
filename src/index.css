@@ -31,6 +31,24 @@ body {
   animation: breathe 10s ease-in-out infinite;
 }
 
+@keyframes breathing-orb {
+  0%, 100% {
+    transform: scale(0.68);
+    box-shadow: 0 0 18px 4px rgb(52 211 153 / 0.45), inset 0 0 18px rgb(167 243 208 / 0.22);
+  }
+  50% {
+    transform: scale(1);
+    box-shadow: 0 0 36px 12px rgb(52 211 153 / 0.7), inset 0 0 28px rgb(209 250 229 / 0.38);
+  }
+}
+
+.breathing-orb {
+  border: 3px solid rgb(110 231 183 / 0.95);
+  background: radial-gradient(circle, rgb(52 211 153 / 0.16), rgb(16 185 129 / 0.05) 65%, transparent 70%);
+  animation: breathing-orb 10s ease-in-out infinite;
+  will-change: transform, box-shadow;
+}
+
 @keyframes fade-in {
   from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }

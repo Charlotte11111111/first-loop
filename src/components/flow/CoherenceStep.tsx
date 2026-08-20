@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Wind, Play } from 'lucide-react';
 
 interface CoherenceStepProps {
@@ -6,14 +6,10 @@ interface CoherenceStepProps {
 }
 
 const DURATION = 30;
-const COHERENCE_VIDEO =
-  'https://testonline-image.vesync.com/hbiz/behavior/v1/video/HRV_coherence.mp4';
 
 export const CoherenceStep: React.FC<CoherenceStepProps> = ({ onComplete }) => {
   const [started, setStarted] = useState(false);
   const [elapsed, setElapsed] = useState(0);
-  const [useVideo, setUseVideo] = useState(true);
-  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     if (!started || elapsed >= DURATION) {
@@ -28,39 +24,32 @@ export const CoherenceStep: React.FC<CoherenceStepProps> = ({ onComplete }) => {
   const handleStart = () => {
     setStarted(true);
     setElapsed(0);
-    if (videoRef.current) {
-      videoRef.current.currentTime = 0;
-      videoRef.current.play().catch(() => setUseVideo(false));
-    }
   };
 
   if (!started) {
     return (
-      <div className="relative flex flex-col min-h-[620px] overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          {useVideo ? (
-            <video
-              className="w-full h-full object-cover opacity-30 blur-[2px] scale-105"
-              src={COHERENCE_VIDEO}
-              muted
-              playsInline
-              preload="metadata"
-              onError={() => setUseVideo(false)}
-            />
-          ) : (
-            <div className="w-full h-full bg-gradient-to-b from-emerald-900/20 to-slate-900/10" />
-          )}
-          <div className="absolute inset-0 bg-[#f6f8fb]/85" />
-        </div>
-
+      <div className="relative flex flex-col min-h-[620px] overflow-hidden bg-[#f6f8fb]">
         <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-8 text-center pb-10">
-          <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-200 flex items-center justify-center mb-5">
-            <Wind className="w-8 h-8 text-emerald-600" />
+          <div className="relative w-28 h-28 flex items-center justify-center mb-5">
+            <div className="absolute inset-0 rounded-full breathing-orb opacity-80" />
+            <div className="relative w-14 h-14 rounded-full bg-white/80 border border-emerald-200 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+              <Wind className="w-7 h-7 text-emerald-600" />
+            </div>
           </div>
           <h2 className="text-xl font-semibold text-slate-900 mb-2 tracking-tight">Resonance breathing</h2>
-          <p className="text-sm text-slate-500 leading-relaxed max-w-[280px] mb-8">
-            Follow the rhythm on screen and breathe slowly to help your body recover.
+          <p className="text-sm text-slate-500 leading-relaxed max-w-[285px] mb-5">
+            Follow the circle to slow your breathing and help your body recover.
           </p>
+          <div className="w-full max-w-[280px] grid grid-cols-2 gap-2 mb-7">
+            <div className="rounded-xl bg-white border border-emerald-100 px-3 py-3">
+              <p className="text-xs font-semibold text-emerald-700">Circle expands</p>
+              <p className="text-[11px] text-slate-500 mt-1">Breathe in slowly</p>
+            </div>
+            <div className="rounded-xl bg-white border border-emerald-100 px-3 py-3">
+              <p className="text-xs font-semibold text-emerald-700">Circle shrinks</p>
+              <p className="text-[11px] text-slate-500 mt-1">Breathe out slowly</p>
+            </div>
+          </div>
           <button
             type="button"
             onClick={handleStart}
@@ -78,26 +67,7 @@ export const CoherenceStep: React.FC<CoherenceStepProps> = ({ onComplete }) => {
   const progress = Math.min(100, (elapsed / DURATION) * 100);
 
   return (
-    <div className="relative flex flex-col min-h-[620px] overflow-hidden bg-black">
-      {useVideo ? (
-        <video
-          ref={videoRef}
-          className="absolute inset-0 w-full h-full object-cover"
-          src={COHERENCE_VIDEO}
-          autoPlay
-          loop
-          muted
-          playsInline
-          onError={() => setUseVideo(false)}
-        />
-      ) : (
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-800 to-emerald-950 flex items-center justify-center">
-          <div className="w-40 h-40 rounded-full border-2 border-emerald-400/50 animate-breathe bg-emerald-400/10" />
-        </div>
-      )}
-
-      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/30 pointer-events-none" />
-
+    <div className="relative flex flex-col min-h-[620px] overflow-hidden bg-gradient-to-b from-slate-900 via-emerald-950 to-slate-950">
       <div className="relative z-10 flex flex-col h-full min-h-[620px]">
         <div className="px-5 pt-4">
           <div className="flex justify-between items-center text-white/90 text-[11px] font-medium mb-2">
@@ -112,10 +82,12 @@ export const CoherenceStep: React.FC<CoherenceStepProps> = ({ onComplete }) => {
           </div>
         </div>
 
-        <div className="flex-1" />
+        <div className="flex-1 flex items-center justify-center">
+          <div className="w-44 h-44 rounded-full breathing-orb" />
+        </div>
 
         <div className="px-5 pb-8 text-center">
-          <p className="text-white text-sm font-medium drop-shadow-md">Follow the rhythm, breathe slowly</p>
+          <p className="text-white text-sm font-medium drop-shadow-md">Expand: inhale · Shrink: exhale</p>
           <p className="text-white/60 text-[11px] mt-1">Relax your shoulders, stay natural</p>
         </div>
       </div>
