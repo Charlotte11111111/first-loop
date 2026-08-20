@@ -32,8 +32,8 @@ export const RestStep: React.FC<RestStepProps> = ({ onComplete }) => {
           <h2 className="text-xl font-semibold text-slate-900 mb-2 tracking-tight">
             Get ready for your rest baseline
           </h2>
-          <p className="text-sm text-slate-500 leading-relaxed max-w-[285px] mb-6">
-            We’ll first measure your signals while your body is at rest.
+          <p className="text-sm text-slate-500 leading-relaxed max-w-[285px] mb-5">
+            We’ll first measure your body’s HR (heart rate) and EDA (electrodermal activity) while you are at rest.
           </p>
           <div className="w-full max-w-[300px] rounded-2xl bg-white border border-slate-100 p-4 text-left space-y-3 mb-8 shadow-sm">
             <p className="text-xs text-slate-700"><span className="font-semibold text-blue-600">01</span> Breathe evenly and naturally</p>
@@ -84,8 +84,8 @@ export const RestStep: React.FC<RestStepProps> = ({ onComplete }) => {
         </div>
 
         <h2 className="text-lg font-semibold text-slate-900 mb-2 tracking-tight">Rest baseline</h2>
-        <p className="text-sm text-slate-500 leading-relaxed max-w-[260px]">
-          Stay relaxed and breathe naturally. Avoid talking or large movements.
+        <p className="text-sm text-slate-500 leading-relaxed max-w-[280px]">
+          Stay relaxed and breathe naturally. We’re recording your HR (heart rate) and EDA (electrodermal activity).
         </p>
       </div>
     </div>
